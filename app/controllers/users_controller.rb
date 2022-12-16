@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-    before_action :set_user, only: [:show,:destroy, :update]
+    skip_before_action :authenticate, only: [:create]
+    before_action :set_user, only: [:show,:destroy, :update]    
     #GET /users
     def index        
         @users = User.all

@@ -18,6 +18,7 @@ gem "jwt"
 #crea el hash de la password
 gem "bcrypt"
 
+gem "debug", require: false
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
