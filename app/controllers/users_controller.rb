@@ -1,31 +1,35 @@
 class UsersController < ApplicationController
     skip_before_action :authenticate, only: [:create]
-    before_action :set_user, only: [:show,:destroy, :update]    
+    before_action :set_user, only: [:show,:destroy, :update]
     #GET /users
-    def index        
+    def index
         @users = User.all
         render json:{status: 200, users: @users}
     end
 
     #GET    /users/:id
     def show        
-        render json:{status: 200, user: @user}
+        render json:{status: 200, user: @user}    
     end
     
     #POST   /users
     def create
         @user = User.new(user_params)
         if @user.save
-            render json:{status: 200, user: @user}
+            render json:{status: 200, user: @user.as_json( except: [:password_digest, :created_at, :updated_at]) }
         else
-            render json:{status: 400, message: @user.error.details}
+            render json:{status: 400, message: @user.errors.details}
         end
         
     end
     
     #PUT    /users/:id  
     def update
-        
+        if @user.update(user_params)
+            render json:{status: 200, user: @user}
+        else
+            render json:{status: 400, message: @user.error.details}
+        end
     end
     
     #DELETE /users/:id  

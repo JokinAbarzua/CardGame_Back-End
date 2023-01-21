@@ -10,12 +10,42 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_12_182521) do
-  create_table "users", force: :cascade do |t|
-    t.string "username"
-    t.string "password_digest"
+ActiveRecord::Schema[7.0].define(version: 2022_12_16_215725) do
+  create_table "games", force: :cascade do |t|
+    t.integer "points_us", default: 0
+    t.integer "points_them", default: 0
+    t.integer "us_count", default: 1
+    t.integer "players_count", default: 0
+    t.integer "size"
+    t.integer "state", default: 0
+    t.string "number"
+    t.string "deck"
+    t.integer "deals", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  create_table "players", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "game_id", null: false
+    t.integer "role"
+    t.integer "team"
+    t.string "hand"
+    t.string "played"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_players_on_game_id"
+    t.index ["user_id"], name: "index_players_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "username"
+    t.string "password_digest"
+    t.string "avatar"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "players", "games"
+  add_foreign_key "players", "users"
 end
