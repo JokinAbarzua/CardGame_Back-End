@@ -18,7 +18,7 @@ class GamesController < ApplicationController
         end        
         
         if @game.persisted?
-            render json: {status: :ok, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
+            render json: {status: 200, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
         else
             render json:{status: 400, message: @game.error.details}
         end                    
@@ -28,7 +28,7 @@ class GamesController < ApplicationController
         params.require(:id)
         @game = Game.find_by(id: params[:id])
         if @game.present?
-            render json:{status: :ok, game: @game}
+            render json:{status: 200, game: @game}
         else
             render json:{status: 400, message: "Game not found"}
         end
@@ -39,7 +39,7 @@ class GamesController < ApplicationController
         @game = Game.find_by(id: params[:id])
         if @game.present?
             @game.update(game_params)
-            render json:{status: :ok, game: @game}
+            render json:{status: 200, game: @game}
         else
             render json:{status: 400, message: "Game not found"}
         end
@@ -88,7 +88,7 @@ class GamesController < ApplicationController
                         return
                     end
                 end
-                render json:{status: :ok, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
+                render json:{status: 200, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
             else
                 render json:{status: 400, message: message}
             end
@@ -112,7 +112,7 @@ class GamesController < ApplicationController
                 @game.deals = (@game.deals + 1) % @game.players_count
                 @game.state = 1 if @game.waiting? #status started si estaba en waiting
                 if @game.save
-                    render json:{status: :ok, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
+                    render json:{status: 200, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
                 else
                     render json:{status: 500, message: "Error at DataBase update"}
                 end                
@@ -136,7 +136,7 @@ class GamesController < ApplicationController
                     if !player.save #esto creo que se puede hacer con rescue
                         render json:{status: 500, message: "Error at DataBase update"}
                     else
-                        render json:{status: :ok, game: generate_game_response, my_hand: player.hand}
+                        render json:{status: 200, game: generate_game_response, my_hand: player.hand}
                     end
                 else
                     render json:{status: 400, message: "Must play a card on your hand" }    
@@ -164,7 +164,7 @@ class GamesController < ApplicationController
                         render json:{status: 500, message: "Error at DataBase update"}
                         return
                     end
-                    render json:{status: :ok, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
+                    render json:{status: 200, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
                 else
                     render json:{status: :forbbiden, message: "You must be admin to add points"}
                 end
@@ -186,7 +186,7 @@ class GamesController < ApplicationController
                         render json:{status: 500, message: "Error at DataBase update"}
                         return
                     end
-                    render json:{status: :ok, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
+                    render json:{status: 200, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
                 else
                     render json:{status: :forbbiden, message: "You must be admin to remove points"}
                 end
@@ -199,7 +199,7 @@ class GamesController < ApplicationController
         params.require(:number)
         @game = @current_user.games.find_by(number: params[:number])
         if @game.present?
-            render json:{status: :ok, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
+            render json:{status: 200, game: generate_game_response, my_hand: @game.players.find_by(user_id: @current_user.id).hand}
         else
             render json:{status: 400, message: "Game not found"}
         end

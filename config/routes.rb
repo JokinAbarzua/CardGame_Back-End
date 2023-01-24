@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   post "game/remove_point", to: "games#remove_point"
   get "game/status", to: "games#status"
   post "/auth/login", to: "authentication#login"
+  post "rails/active_storage/direct_uploads", to: "direct_uploads#create"
 end
