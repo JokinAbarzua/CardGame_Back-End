@@ -3,7 +3,8 @@ class DirectUploadsController < ActiveStorage::DirectUploadsController
     skip_before_action :verify_authenticity_token    
 
     def create
-        blob = ActiveStorage::Blob.create_before_direct_upload!(filename: blob_args[:filename] ,byte_size: blob_args[:byte_size],checksum: blob_args[:checksum], content_type: blob_args[:content_type])
+        blob = ActiveStorage::Blob.create_before_direct_upload!(filename: blob_args[:filename] ,byte_size: blob_args[:byte_size],
+            checksum: blob_args[:checksum], content_type: blob_args[:content_type]) 
         render json: direct_upload_json(blob)
     end    
 

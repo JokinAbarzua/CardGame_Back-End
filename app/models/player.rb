@@ -16,7 +16,35 @@ class Player < ApplicationRecord
   belongs_to :game, counter_cache: true
 
   enum role: {admin: 0,guest: 1}
-  enum team: {us: 0, them: 1}    
+  enum team: {us: 0, them: 1}
+
+
+  def play(card)
+    raise StandardError.new("La partida no ha empezado") if self.game.waiting?
+    raise StandardError.new("La ya ha terminado") if self.game.finished?
+    if(self.hand.include?(card))
+      self.played.push(card)
+      self.hand.delete(card)      
+    else
+      raise StandardError.new("Debes juar una carta que esté e tu mano")
+    end
+  end
+
+  def deal
+    if self.seat == self.game.deals
+      self.game.reset_deck
+      self.game.deck = self.game.deck.shuffle(random: Random.new())
+      for player in self.game.players
+        player.played = []
+        player.hand = self.game.deck.pop(3)
+        player.save
+      end
+      self.game.deals = (self.game.deals + 1) % self.game.size
+      self.game.state = 1 if self.game.waiting?
+    else
+      raise StandardError.new("No es su turno para repartir")
+    end
+  end
 
   private
   

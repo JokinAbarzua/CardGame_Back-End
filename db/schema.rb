@@ -59,6 +59,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_21_152602) do
     t.integer "role"
     t.integer "team"
     t.string "hand"
+    t.integer "seat"
     t.string "played"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -6,9 +6,9 @@ class CreateGames < ActiveRecord::Migration[7.0]
       t.integer :us_count, default: 1
       t.integer :players_count, default: 0
       t.integer :size
-      t.integer :state, default: 0 #empeza en waiting
+      t.integer :state, default: 0 #empieza en waiting
       t.string :number
-      t.string :deck,array: true
+      t.string :deck,array: true      
       t.integer :deals,default: 0 #quien tiene el turno de repartir
 
       t.timestamps

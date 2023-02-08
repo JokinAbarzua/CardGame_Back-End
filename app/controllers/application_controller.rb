@@ -7,7 +7,12 @@ class ApplicationController < ActionController::API
     def authenticate
         header = request.headers['Authorization']
         header = header.split(' ').last if header
-        decoded = JsonWebToken.jwt_decode(header)        
+        begin
+            decoded = JsonWebToken.jwt_decode(header)        
+        rescue
+            render json:{status: 401, data: {message: "Su token ha expirado"}} 
+            return
+        end
         @current_user = User.find(decoded[:user_id])
     end
 end

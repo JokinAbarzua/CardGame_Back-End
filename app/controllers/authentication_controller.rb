@@ -14,7 +14,7 @@ class AuthenticationController < ApplicationController
                 render json:{status: 200, data: {token:token, user: @user.as_json( except: [:password_digest, :created_at, :updated_at])}}
             end
         else
-            render json:{status: 401, data: {message: "Usuario o Contraseña Invalidos"}} 
+            render json:{status: 403, data: {message: "Usuario o Contraseña Invalidos"}} 
         end
     end
 end

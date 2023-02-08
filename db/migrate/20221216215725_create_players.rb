@@ -6,6 +6,7 @@ class CreatePlayers < ActiveRecord::Migration[7.0]
       t.integer :role    
       t.integer :team
       t.string :hand, array: true
+      t.integer :seat
       t.string :played, array: true #cartas jugadas
 
       t.timestamps
