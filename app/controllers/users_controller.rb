@@ -24,13 +24,40 @@ class UsersController < ApplicationController
     end
     
     #PUT    /users/:id
-    def update
-        if @user.update(user_params)
-            avatar_url = rails_blob_path(@user.avatar)
-            render json:{status: 200, data: {token:"", user: @user.as_json( except: [:password_digest, :created_at, :updated_at]).merge({"avatar"=> avatar_url})}}
-        else
-            render json:{status: 400, data: {message: @user.error.details}}
+    def update        
+        update = false        
+        error = ""
+        if !params[:user][:username].nil?             
+            if User.valid_attribute?(:username,params[:user][:username],error)
+                update = @current_user.update_attribute("username", params[:user][:username]) 
+            else
+                update = false
+            end                        
         end
+        if !params[:user][:password].nil?
+            if User.valid_attribute?(:password,params[:user][:password],error)
+                update = @current_user.update_attribute("password", params[:user][:password]) 
+            else
+                update = false
+            end                        
+        end
+        if !params[:user][:avatar].nil? 
+            if User.valid_attribute?(:avatar,params[:user][:avatar], error)
+                update = @current_user.update_attribute("avatar", params[:user][:avatar])
+            else
+                update = false
+            end                        
+        end
+        if update
+            if(!@current_user.avatar.signed_id.nil?)
+                avatar_url = rails_blob_path(@current_user.avatar)
+                render json:{status: 200, data: {token:"", user: @current_user.as_json( except: [:password_digest, :created_at, :updated_at]).merge({"avatar"=> avatar_url})}}
+            else
+                render json:{status: 200, data: {token:"", user: @current_user.as_json( except: [:password_digest, :created_at, :updated_at])}}
+            end
+        else
+            render json:{status: 400, data: {message: error}}
+        end        
     end
         
 
@@ -39,7 +66,7 @@ class UsersController < ApplicationController
         if(@user.destroy)
             render json:{status: 200, data: {message: "Usuario Eliminado con Exito"}}
         else
-            render json:{status: 400, data: {message: @user.error.details}}
+            render json:{status: 400, data: {message: @user.errors.details}}
         end
     end
     
