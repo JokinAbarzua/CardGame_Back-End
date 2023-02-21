@@ -30,7 +30,20 @@ class Player < ApplicationRecord
     end
   end
 
+  def discard(card)
+    raise StandardError.new("La partida no ha empezado") if self.game.waiting?
+    raise StandardError.new("La ya ha terminado") if self.game.finished?
+    if(self.hand.include?(card))
+      self.played.push("empty")
+      self.hand.delete(card)
+    else
+      raise StandardError.new("No puede descartar una carta que no está en su mano")
+    end  
+  end
+
   def deal
+    raise StandardError.new("La partida no ha empezado") if self.game.waiting?
+    raise StandardError.new("La ya ha terminado") if self.game.finished?
     if self.seat == self.game.deals
       self.game.reset_deck
       self.game.deck = self.game.deck.shuffle(random: Random.new())

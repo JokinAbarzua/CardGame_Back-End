@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-    has_secure_password    
+    has_secure_password          
     validates :username, presence: {message: "Se requiere un nombre de usuario"}
     validates :username, uniqueness: {message: "Este nombre de usuario ya ha sido tomado"}
     validates :username, length: {minimum:4, too_short: "El nombre es muy corto. Debe ser mayor a 3 caracteres", 
@@ -10,16 +10,29 @@ class User < ApplicationRecord
 
     has_many :players, dependent: :destroy
     has_many :games, through: :players
-    has_one_attached :avatar        
+    has_one_attached :avatar, dependent: :destroy
+    before_destroy do  #para que al momento de eliminar el usuarrio se elimine su avatar. No funcionaba con dependent: :destroy ni :purge
+      self.avatar.purge
+    end
 
     def self.valid_attribute?(attr, value, error)
         mock = self.new(attr => value)
         if mock.valid?
             return true
-        else
-            puts error.object_id
-            error.concat(mock.errors.messages.to_s)
+        else            
+            error.concat(mock.errors[attr].to_s)
             return !mock.errors.has_key?(attr)          
         end
+      end    
+
+    def update_avatar(avatar)
+      if self.avatar.attached?
+          self.avatar.purge
       end
+      return self.update_attribute("avatar", avatar)        
+    end
+
+    def logout
+      self.token = ""
+    end    
 end

@@ -1,7 +1,7 @@
 class GamesController < ApplicationController
     
-    before_action :set_game, only: [:add_point, :remove_point, :status, :play, :deal,:join]
-    before_action :set_player, only: [:play,:deal]
+    before_action :set_game, only: [:add_point, :remove_point, :status, :play, :deal,:join,:discard,:end_game]
+    before_action :set_player, only: [:play,:deal,:discard]
 
     #GET    /games                                                                                  
     def index
@@ -87,31 +87,66 @@ class GamesController < ApplicationController
         end
     end
 
+    def discard
+        params.require([:card])
+        begin
+            @player.discard(params[:card])
+            if @player.save
+                render json:{status: 200, data: {game: generate_game_response, hand: @player.hand}}                
+            else
+                render json:{status: 500, data: {message: "Error at DataBase update"}}
+            end                    
+        rescue StandardError => e
+            render json:{status: 400, data: {message: e.message}}
+        end
+    end
+
     def add_point
         params.require([:team])                            
         if @game.players.find_by(user_id: @current_user.id).admin?
-            @game.add_point(params[:team])    
+            begin
+                @game.add_point(params[:team])    
+            rescue StandardError => e
+                render json:{status: 400, data: {message: e.message}}
+                return
+            end
             save_game
         else
-            render json:{status: :forbbiden, data: {message: "You must be admin to add points"}}
+            render json:{status: :forbbiden, data: {message: "Debes ser admin para añadir puntos"}}
         end        
     end
 
     def remove_point
             params.require([:team]) 
             if @game.players.find_by(user_id: @current_user.id).admin?
-                if @game.remove_point(params[:team])
+                begin                    
+                    @game.remove_point(params[:team])
                     save_game
-                else
-                    render json:{status: 400, data: {message: "No se pueden quitar más puntos"}}    
+                rescue StandardError => e
+                    render json:{status: 400, data: {message: e.message}}    
                 end                     
             else
-                render json:{status: :forbbiden, data: {message: "You must be admin to remove points"}}
+                render json:{status: :forbbiden, data: {message: "Debes ser admin para quitar puntos"}}
             end            
     end
 
     def status                 
         render json:{status: 200, data: {game: generate_game_response, hand: @game.players.find_by(user_id: @current_user.id).hand}}        
+    end
+
+    def end_game
+        if @game.players.find_by(user_id: @current_user.id).admin?
+            begin
+                @game.end_game()
+                save_game
+                @game.destroy!
+            rescue StandardError => e
+                render json:{status: 400, data: {message: e.message}}
+            end                     
+        else
+            render json:{status: :forbbiden, data: {message: "Debes ser admin para terminar la partida"}}
+        end
+
     end
 
     private
@@ -132,7 +167,7 @@ class GamesController < ApplicationController
             params.require([:number])
             @game = Game.find_by(number: params[:number])
             if (!@game.present?)
-                render json:{status: 400, data: {message: "Game not found"}}
+                render json:{status: 400, data: {message: "No se ha encontrado el juego"}}
                 return
             end           
         end        

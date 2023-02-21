@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
     skip_before_action :authenticate, only: [:create]
-    before_action :set_user, only: [:show,:destroy, :update]
+    before_action :set_user, only: [:show]
     #GET /users
     def index
         @users = User.all
@@ -15,7 +15,7 @@ class UsersController < ApplicationController
     #POST   /users
     def create
         @user = User.new(user_params)
-        if @user.save           
+        if @user.save
             render json:{status: 200, data: {user: @user.as_json( except: [:password_digest, :created_at, :updated_at])}}
         else
             render json:{status: 400, data: {message: @user.errors.objects.first.full_message}}
@@ -23,7 +23,7 @@ class UsersController < ApplicationController
         
     end
     
-    #PUT    /users/:id
+    #PUT    /users/
     def update        
         update = false        
         error = ""
@@ -35,18 +35,18 @@ class UsersController < ApplicationController
             end                        
         end
         if !params[:user][:password].nil?
-            if User.valid_attribute?(:password,params[:user][:password],error)
-                update = @current_user.update_attribute("password", params[:user][:password]) 
+            if User.valid_attribute?(:password,params[:user][:password],error)                
+                update = @current_user.update_attribute("password", params[:user][:password])
             else
                 update = false
             end                        
         end
-        if !params[:user][:avatar].nil? 
-            if User.valid_attribute?(:avatar,params[:user][:avatar], error)
-                update = @current_user.update_attribute("avatar", params[:user][:avatar])
-            else
-                update = false
-            end                        
+        if !params[:user][:avatar].nil?                                 
+            begin
+                update = @current_user.update_avatar(params[:user][:avatar])
+            rescue StandardError => e
+                error = e.message
+            end
         end
         if update
             if(!@current_user.avatar.signed_id.nil?)
@@ -63,10 +63,10 @@ class UsersController < ApplicationController
 
     #DELETE /users/:id  
     def destroy
-        if(@user.destroy)
+        if(@current_user.destroy)
             render json:{status: 200, data: {message: "Usuario Eliminado con Exito"}}
         else
-            render json:{status: 400, data: {message: @user.errors.details}}
+            render json:{status: 400, data: {message: @current_user.errors.details}}
         end
     end
     

@@ -19,18 +19,28 @@ class Game < ApplicationRecord
 
 
     def add_point(team)
-        if team == 0 || team == "us"
-            self.points_us += 1
+        if self.started?
+            if team == 0 || team == "us"
+                self.points_us += 1
+            else
+                self.points_them += 1
+            end
         else
-            self.points_them += 1
+            raise StandardError.new("La partida debe estar en curso para poder añadir puntos")
         end
     end
 
     def remove_point(team)
-        if team == 0 || team == "us"
-            self.points_us == 0 ? false : self.points_us -= 1            
+        if self.started?
+            if team == 0 || team == "us"
+                raise StandardError.new("No se pueden quitar más puntos") if self.points_us == 0
+                self.points_us -= 1            
+            else
+                raise StandardError.new("No se pueden quitar más puntos") if self.points_them == 0
+                self.points_them -= 1
+            end
         else
-            self.points_them == 0 ? false : self.points_them -= 1
+            raise StandardError.new("La partida debe estar en curso para poder quitar puntos")
         end
     end
     
@@ -62,6 +72,14 @@ class Game < ApplicationRecord
         self.players
     end
         
+    def end_game
+        if self.started?
+            self.state = "finished"            
+        else
+            raise StandardError.new("La partida debe estar en curso para poder terminar")
+        end
+    end
+
     private
 
     def find_seat(player,team)
