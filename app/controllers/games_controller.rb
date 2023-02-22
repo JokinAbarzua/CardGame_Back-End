@@ -5,7 +5,7 @@ class GamesController < ApplicationController
 
     #GET    /games                                                                                  
     def index
-        @games = @current_user.games.where(:state => [0,1]).order("created_at DESC")
+        @games = @current_user.games.order("created_at DESC")
         render json:{status: 200, data:{games: @games.as_json(only: [:number,:state,:created_at,:points_us,:points_them,:size])}}
     end
     #POST   /games
@@ -139,7 +139,7 @@ class GamesController < ApplicationController
             begin
                 @game.end_game()
                 save_game
-                @game.destroy!
+                GameCleanupJob.set(wait: 3.minute).perform_later(@game)
             rescue StandardError => e
                 render json:{status: 400, data: {message: e.message}}
             end                     
