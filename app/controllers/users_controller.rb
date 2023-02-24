@@ -61,7 +61,7 @@ class UsersController < ApplicationController
     end
         
 
-    #DELETE /users/:id  
+    #DELETE /user
     def destroy
         if(@current_user.destroy)
             render json:{status: 200, data: {message: "Usuario Eliminado con Exito"}}
@@ -75,7 +75,13 @@ class UsersController < ApplicationController
     private
 
         def set_user 
-            @user = User.find(params[:id])
+            if User.exists?(params[:id])
+                @user = User.find(params[:id])
+            else
+                !@user.present?
+                render json:{status: 404, data: {message: "No se ha podido encontrar al usuario de id " + params[:id]}}
+                return
+            end
         end
 
         def user_params
