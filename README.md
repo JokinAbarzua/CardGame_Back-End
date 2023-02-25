@@ -65,6 +65,70 @@ classDiagram
 ```
 
 ## Endpoints
+Para todas las request (excepto "create" y "login") es necesario enviar el JWT que autoriza al portador en el header como authorization bearer.<br/>Cuando se recibe una request sin JWT o estando éste caducado se responde:
+```json
+{
+    "status": 401,
+    "data": {
+        "message": "Su token ha expirado"
+    }
+}
+```
+### Auth
+<table>
+<tr>
+<td> Ruta </td> <td> Endpoint </td> <td> Descripcion </td> <td> Success </td> <td> Error </td>
+</tr>  
+<tr>
+<td> POST /auth/login </td> 
+<td>  login </td>  
+<td> Valida usuario y contraseña y genera un JWT<br/>Body params: Username, password </td> 
+<td> 
+
+```json
+{
+    "status": 200,
+    "data": {
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMCwiZXhwIjoxNjc3MzYyNzUzfQ.vtVXxuqmD4ZKsnio0UqrJCYWc8-Xy7NLoXjaTBpJsYY",
+        "user": {
+            "id": 10,
+            "username": "JohnDoe"
+        }
+    }
+}
+```
+</td> 
+<td> 
+
+```json
+{
+    "status": 403,
+    "data": {
+        "message": "Usuario o Contraseña Invalidos"
+    }
+}
+```
+</td>
+</tr>
+<tr>
+<td> POST /auth/logout </td> 
+<td> logout </td>  
+<td> Elimina el token de la sesión actual </td> 
+<td> 
+
+```json
+{
+    "status": 200,
+    "data": {
+        "message": "Que vuelvas pronto :)"
+    }
+}
+```
+</td> 
+<td> - </td>
+</tr>
+</table>
+
 ### User
 <table>
 <tr>
@@ -926,3 +990,45 @@ Si el juego ya está lleno
 ```
 </td>
 </tr>
+</table>
+
+### Direct Upload
+
+<table>
+<tr>
+<td> Ruta </td> <td> Endpoint </td> <td> Descripcion </td> <td> Success </td> <td> Error </td>
+</tr>  
+<tr>
+<td> POST  rails/active_storage/direct_uploads </td> 
+<td>  create </td>  
+<td> Crea un  Blob con el archivo que se le envía </td> 
+<td> 
+
+```json
+{
+    "id": 4,
+    "key": "o7hsrzgb5lm8im41fkg1lxciczhd",
+    "filename": "bg2.jpg",
+    "content_type": "image/jpeg",
+    "metadata": {},
+    "service_name": "local",
+    "byte_size": 314903,
+    "checksum": "b9WCe0gQisAiVGUpS5vVuQ==",
+    "created_at": "2023-02-25T17:10:52.218Z",
+    "signed_id": "eyJfcmFpbHMiOnsibW",
+    "attachable_sgid": "BAh7CEkiCGdpZAY6BkVUSSI3",
+    "service_url": "http://localhost:3000/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibW/bg2.jpg",
+    "direct_upload": {
+        "url": "http://localhost:3000/rails/active_storage/disk/<longurl>",
+        "headers": {
+            "Content-Type": "image/jpeg"
+        }
+    }
+}
+```
+
+</td>
+<td> - </td>
+</tr>
+
+</table>
