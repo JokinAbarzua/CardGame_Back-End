@@ -68,7 +68,7 @@ classDiagram
 ### User
 <table>
 <tr>
-<td> Ruta </td> <td> Endpoint </td> <td> Description </td> <td> Success </td> <td> Error </td>
+<td> Ruta </td> <td> Endpoint </td> <td> Descripción </td> <td> Success </td> <td> Error </td>
 </tr>
 <tr>
 <td> GET /users </td> 
@@ -249,7 +249,7 @@ Presenta los mismos mensajes de error de las validaciones en el endpoint create
 ### Game
 <table>
 <tr>
-<td> Ruta </td> <td> Endpoint </td> <td> Descripcion </td> <td> Success </td> <td> Error </td>
+<td> Ruta </td> <td> Endpoint </td> <td> Descripción </td> <td> Success </td> <td> Error </td>
 </tr>
 <tr>
 <td>GET /games  </td> 
@@ -409,49 +409,520 @@ Si el juego ya está lleno
 <tr>
 <td>POST /game/deal</td> 
 <td> deal </td> 
-<td>  </td> 
-<td>  </td> 
-<td>  </td>
+<td> Mezcla el mazo y reparte 3 cartas a cada jugador <br/>Body params: GameNumber</td> 
+<td> 
+
+```json
+{
+    "status": 200,
+    "data": {
+        "game": {
+            "state": "started",
+            "deals": 1,
+            "points_us": 0,
+            "points_them": 0,
+            "players_count": 2,
+            "size": 2,
+            "number": "JohnDoe#121",
+            "created_at": "2023-02-25T13:19:49.032Z",
+            "players": [
+                {
+                    "played": [],
+                    "role": "admin",
+                    "team": "us",
+                    "seat": 0,
+                    "user": {
+                        "username": "JohnDoe"
+                    }
+                },
+                {
+                    "played": [],
+                    "role": "guest",
+                    "team": "them",
+                    "seat": 1,
+                    "user": {
+                        "username": "RichardRoe"
+                    }
+                }
+            ]
+        },
+        "hand": [
+            "b6",
+            "b11",
+            "b7"
+        ]
+    }
+}
+```
+</td> 
+<td>  
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "No es su turno para repartir"
+    }
+}
+```
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "La partida no ha empezado"
+    }
+}
+```
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "La partida ya ha terminado"
+    }
+}
+```
+</td>
 </tr>
 <tr>
 <td>POST /game/play</td> 
 <td> play </td> 
-<td>  </td> 
-<td>  </td> 
-<td>  </td>
+<td> El usuario juega una carta de su mano<br/>Body params: carta, GameNumber </td> 
+<td>  
+
+```json
+{
+    "status": 200,
+    "data": {
+        "game": {
+            "points_us": 0,
+            "points_them": 0,
+            "players_count": 2,
+            "size": 2,
+            "state": "started",
+            "number": "JohnDoe#121",
+            "deals": 1,
+            "created_at": "2023-02-25T13:19:49.032Z",
+            "players": [
+                {
+                    "role": "admin",
+                    "team": "us",
+                    "seat": 0,
+                    "played": [
+                        "b6"
+                    ],
+                    "user": {
+                        "username": "JohnDoe"
+                    }
+                },
+                {
+                    "role": "guest",
+                    "team": "them",
+                    "seat": 1,
+                    "played": [],
+                    "user": {
+                        "username": "RichardRoe"
+                    }
+                }
+            ]
+        },
+        "hand": [
+            "b11",
+            "b7"
+        ]
+    }
+}
+```
+
+</td> 
+<td>  
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "Debes juar una carta que esté e tu mano"
+    }
+}
+```
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "La partida no ha empezado"
+    }
+}
+```
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "La partida ya ha terminado"
+    }
+}
+```
+</td>
 </tr>
 <tr>
 <td> POST /game/discard </td> 
 <td> discard </td> 
-<td>  </td> 
-<td>  </td> 
-<td>  </td>
+<td> El usuario descarta una carta de su mano<br/>Body params: carta, GameNumber  </td> 
+<td>
+
+```json
+{
+    "status": 200,
+    "data": {
+        "game": {
+            "points_us": 0,
+            "points_them": 0,
+            "players_count": 2,
+            "size": 2,
+            "state": "started",
+            "number": "JohnDoe#876",
+            "deals": 0,
+            "created_at": "2023-02-25T13:43:12.672Z",
+            "players": [
+                {
+                    "role": "admin",
+                    "team": "us",
+                    "seat": 0,
+                    "played": [
+                        "empty"
+                    ],
+                    "user": {
+                        "username": "JohnDoe"
+                    }
+                },
+                {
+                    "role": "guest",
+                    "team": "them",
+                    "seat": 1,
+                    "played": [],
+                    "user": {
+                        "username": "RichardRoe"
+                    }
+                }
+            ]
+        },
+        "hand": [
+            "b7",
+            "b11"
+        ]
+    }
+}
+```
+</td> 
+<td>  
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "No puede descartar una carta que no está en su mano"
+    }
+}
+```
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "La partida no ha empezado"
+    }
+}
+```
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "La partida ya ha terminado"
+    }
+}
+```
+</td>
 </tr>
 <tr>
 <td> POST /game/add_point </td> 
 <td> add_points </td> 
-<td>  </td> 
-<td>  </td> 
-<td>  </td>
+<td> Agrega un punto al equipo pasado como parámetro <br/>Body params: Equipo, GameNumber </td> 
+<td> 
+
+```json
+{
+    "status": 200,
+    "data": {
+        "game": {
+            "state": "started",
+            "points_us": 1,
+            "points_them": 0,
+            "players_count": 2,
+            "size": 2,
+            "number": "JohnDoe#876",
+            "deals": 0,
+            "created_at": "2023-02-25T13:43:12.672Z",
+            "players": [
+                {
+                    "role": "admin",
+                    "team": "us",
+                    "seat": 0,
+                    "played": [
+                        "empty"
+                    ],
+                    "user": {
+                        "username": "JohnDoe"
+                    }
+                },
+                {
+                    "role": "guest",
+                    "team": "them",
+                    "seat": 1,
+                    "played": [],
+                    "user": {
+                        "username": "RichardRoe"
+                    }
+                }
+            ]
+        },
+        "hand": [
+            "b7",
+            "b11"
+        ]
+    }
+}
+```
+ </td> 
+<td>
+ 
+```json
+{
+    "status": "forbbiden",
+    "data": {
+        "message": "Debes ser admin para añadir puntos"
+    }
+}
+```
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "La partida debe estar en curso para poder añadir puntos"
+    }
+}
+```
+
+</td>
 </tr>
 <tr>
 <td> POST /game/remove_point </td> 
 <td> remove_points </td> 
-<td>  </td> 
-<td>  </td> 
-<td>  </td>
+<td>  Resta un punto al equipo pasado como parámetro<br/>Body params: Equipo, GameNumber</td> 
+<td>  
+
+```json
+{
+    "status": 200,
+    "data": {
+        "game": {
+            "state": "started",
+            "points_us": 0,
+            "points_them": 0,
+            "players_count": 2,
+            "size": 2,
+            "number": "JohnDoe#876",
+            "deals": 0,
+            "created_at": "2023-02-25T13:43:12.672Z",
+            "players": [
+                {
+                    "role": "admin",
+                    "team": "us",
+                    "seat": 0,
+                    "played": [
+                        "empty"
+                    ],
+                    "user": {
+                        "username": "JohnDoe"
+                    }
+                },
+                {
+                    "role": "guest",
+                    "team": "them",
+                    "seat": 1,
+                    "played": [],
+                    "user": {
+                        "username": "RichardRoe"
+                    }
+                }
+            ]
+        },
+        "hand": [
+            "b7",
+            "b11"
+        ]
+    }
+}
+```
+</td> 
+<td> 
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "No se pueden quitar más puntos"
+    }
+}
+```
+```json
+{
+    "status": "forbbiden",
+    "data": {
+        "message": "Debes ser admin para añadir puntos"
+    }
+}
+```
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "La partida debe estar en curso para poder añadir puntos"
+    }
+}
+```
+</td>
 </tr>
 <tr>
 <td>  GET /game/status </td> 
 <td> status </td> 
-<td>  </td> 
-<td>  </td> 
-<td>  </td>
+<td> Muestra los datos de la partida<br/>Body params: GameNumber </td> 
+<td> 
+
+```json
+{
+    "status": 200,
+    "data": {
+        "game": {
+            "points_us": 0,
+            "points_them": 0,
+            "players_count": 2,
+            "size": 2,
+            "state": "started",
+            "number": "JohnDoe#876",
+            "deals": 0,
+            "created_at": "2023-02-25T13:43:12.672Z",
+            "players": [
+                {
+                    "role": "admin",
+                    "team": "us",
+                    "seat": 0,
+                    "played": [
+                        "empty"
+                    ],
+                    "user": {
+                        "username": "JohnDoe"
+                    }
+                },
+                {
+                    "role": "guest",
+                    "team": "them",
+                    "seat": 1,
+                    "played": [],
+                    "user": {
+                        "username": "RichardRoe"
+                    }
+                }
+            ]
+        },
+        "hand": [
+            "b7",
+            "b11"
+        ]
+    }
+}
+```
+</td> 
+<td> 
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "No se ha encontrado el juego"
+    }
+}
+```
+</td>
 </tr>
 <tr>
 <td>  POST /game/end</td> 
 <td> end_game </td> 
-<td>  </td> 
-<td>  </td> 
-<td>  </td>
+<td>  
+
+```json
+{
+    "status": 200,
+    "data": {
+        "game": {
+            "state": "finished",
+            "points_us": 0,
+            "points_them": 0,
+            "players_count": 2,
+            "size": 2,
+            "number": "JohnDoe#876",
+            "deals": 0,
+            "created_at": "2023-02-25T13:43:12.672Z",
+            "players": [
+                {
+                    "role": "admin",
+                    "team": "us",
+                    "seat": 0,
+                    "played": [
+                        "empty"
+                    ],
+                    "user": {
+                        "username": "JohnDoe"
+                    }
+                },
+                {
+                    "role": "guest",
+                    "team": "them",
+                    "seat": 1,
+                    "played": [],
+                    "user": {
+                        "username": "RichardRoe"
+                    }
+                }
+            ]
+        },
+        "hand": [
+            "b7",
+            "b11"
+        ]
+    }
+}
+```
+</td> 
+<td>  
+
+```json
+{
+    "status": "forbbiden",
+    "data": {
+        "message": "Debes ser admin para terminar la partida"
+    }
+}
+```
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "La partida debe estar en curso para poder terminar"
+    }
+}
+```
+</td>
 </tr>
