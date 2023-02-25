@@ -63,6 +63,7 @@ classDiagram
 	   +checksum: string
    }
 ```
+
 ## Endpoints
 ### User
 <table>
@@ -82,8 +83,7 @@ classDiagram
             {
                 "id": 1,
                 "username": "John Doe",
-                "password_digest": "$2a$12$1UmwWpYf/XwJ/Vs55DeB0eqEWFELaiJjDviaeq1pORJRnvtj7oSee",
-                "token": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2NzcyNDcxMzF9.ToCRlp_lJ9nmFU-Ox-fxORXQkWiA96olEjN4kan6e-0",
+                "password_digest": "$2a$12$1UmwWpYf/XwJ/Vs55DeB0eqEWFELaiJjDviaeq1pORJRnvtj7oSee",                
                 "created_at": "2023-02-21T20:30:48.758Z",
                 "updated_at": "2023-02-24T07:58:51.568Z"
             },            
@@ -108,8 +108,7 @@ classDiagram
         "user": {
             "id": 3,
             "username": "John Doe",
-            "password_digest": "$2a$12$wrF5twLOl12HB62.rE.jBO4ovfRpp28Au8TjnryXKmKPmPTCa6uEm",
-            "token": "",
+            "password_digest": "$2a$12$wrF5twLOl12HB62.rE.jBO4ovfRpp28Au8TjnryXKmKPmPTCa6uEm",            
             "created_at": "2023-02-22T18:01:42.467Z",
             "updated_at": "2023-02-22T21:47:09.738Z"
         }
@@ -144,8 +143,7 @@ Crea un usuario en la base de datos con los parámetros pasados en el body de la
     "data": {
         "user": {
             "id": 8,
-            "username": "John Doe",
-            "token": null
+            "username": "John Doe",            
         }
     }
 }
@@ -187,17 +185,273 @@ Si la contraseña es muy corta:
 <tr>
 <td> PUT /user </td> 
 <td> update </td> 
+<td> Actualiza los datos del usuario que envía la request con los parámetros del body</td> 
+<td>
+
+```json
+{
+    "status": 200,
+    "data": {
+        "token": "",
+        "user": {
+            "username": "John Doe",
+            "id": 8
+        }
+    }
+}
+```
+
+</td> 
+<td> 
+Presenta los mismos mensajes de error de las validaciones en el endpoint create
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": ""
+    }
+}
+```
+</td>
+</tr>
+<tr>
+<td> DELETE /user </td> 
+<td> destroy </td> 
+<td>  Elimina de la base de datos al usuario que envía la request </td> 
+<td>  
+
+```json
+{
+    "status": 200,
+    "data": {
+        "message": "Usuario Eliminado con Exito"
+    }
+}
+```
+
+</td> 
+<td> 
+
+```json
+{
+	"status": 400, 
+	"data": {
+		"message": ""
+	}
+}
+```
+
+</td>
+</tr>
+</table>
+
+### Game
+<table>
+<tr>
+<td> Ruta </td> <td> Endpoint </td> <td> Descripcion </td> <td> Success </td> <td> Error </td>
+</tr>
+<tr>
+<td>GET /games  </td> 
+<td> index </td> 
+<td> Muestra todo los juegos en los que se encuentra el usuario que hace la request </td> 
+<td> 
+
+```json
+{
+    "status": 200,
+    "data": {
+        "games": [
+            {
+                "points_us": 0,
+                "points_them": 0,
+                "size": 2,
+                "state": "started",
+                "number": "JohnDoe#298",
+                "created_at": "2023-02-22T18:03:00.217Z"
+            },       
+        ]
+    }
+}
+```
+
+ </td> 
+<td> - </td>
+</tr>
+<tr>
+<td> POST /game </td> 
+<td> create </td> 
+<td>  Crea en la base de datos un nuevo juego de tamaño igual al pasado en los parámetros del body</td> 
+<td>
+
+```json
+{
+    "status": 200,
+    "data": {
+        "game": {
+            "points_us": 0,
+            "points_them": 0,
+            "players_count": 1,
+            "size": 4,
+            "state": "waiting",
+            "number": "JohnDoe#36",
+            "deals": 0,
+            "created_at": "2023-02-25T02:31:21.464Z",
+            "players": [
+                {
+                    "seat": 0,
+                    "role": "admin",
+                    "team": "us",
+                    "played": [],
+                    "user": {
+                        "username": "elfran"
+                    }
+                }
+            ]
+        },
+        "hand": []
+    }
+}
+```
+</td> 
+<td>  
+
+```json
+{
+	"status": 500, 
+	"data": {
+		"message": "Error at DataBase update"
+	}
+}
+```
+</td>
+</tr>
+<tr>
+<td> POST /game/join</td> 
+<td> join </td> 
+<td> Ingresa a una partida al usuario que hace la request<br/>Body params: Team, Number </td> 
+<td>  
+
+```json
+{
+    "status": 200,
+    "data": {
+        "game": {
+            "players_count": 2,
+            "points_us": 0,
+            "points_them": 0,
+            "size": 4,
+            "state": "waiting",
+            "number": "JohnDoe#36",
+            "deals": 0,
+            "created_at": "2023-02-25T02:31:21.464Z",
+            "players": [
+                {
+                    "role": "admin",
+                    "team": "us",
+                    "seat": 0,
+                    "played": [],
+                    "user": {
+                        "username": "JohnDoe"
+                    }
+                },
+                {
+                    "role": "guest",
+                    "team": "them",
+                    "seat": 1,
+                    "played": [],
+                    "user": {
+                        "username": "Richard Roe"
+                    }
+                }
+            ]
+        },
+        "hand": []
+    }
+}
+```
+
+</td> 
+<td>
+Si el usuario ya se encuentra en la partida
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "El usuario ya se encuentra en la partida"
+    }
+}
+```
+Si el equipo deseado ya esta lleno
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "El equipo \"<nosotros | ellos>\" ya está lleno"
+    }
+}
+```
+
+Si el juego ya está lleno
+
+```json
+{
+    "status": 400,
+    "data": {
+        "message": "El juego ya esta lleno"
+    }
+}
+```
+</td>
+</tr>
+<tr>
+<td>POST /game/deal</td> 
+<td> deal </td> 
 <td>  </td> 
 <td>  </td> 
 <td>  </td>
 </tr>
 <tr>
-<td> DELETE /user </td> 
-<td> destroy </td> 
+<td>POST /game/play</td> 
+<td> play </td> 
 <td>  </td> 
 <td>  </td> 
 <td>  </td>
 </tr>
-</table>
-
-### Game
+<tr>
+<td> POST /game/discard </td> 
+<td> discard </td> 
+<td>  </td> 
+<td>  </td> 
+<td>  </td>
+</tr>
+<tr>
+<td> POST /game/add_point </td> 
+<td> add_points </td> 
+<td>  </td> 
+<td>  </td> 
+<td>  </td>
+</tr>
+<tr>
+<td> POST /game/remove_point </td> 
+<td> remove_points </td> 
+<td>  </td> 
+<td>  </td> 
+<td>  </td>
+</tr>
+<tr>
+<td>  GET /game/status </td> 
+<td> status </td> 
+<td>  </td> 
+<td>  </td> 
+<td>  </td>
+</tr>
+<tr>
+<td>  POST /game/end</td> 
+<td> end_game </td> 
+<td>  </td> 
+<td>  </td> 
+<td>  </td>
+</tr>
