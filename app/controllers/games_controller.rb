@@ -43,11 +43,7 @@ class GamesController < ApplicationController
         else
             render json:{status: 400, data: {message: "Game not found"}}
         end
-    end
-    #DELETE /games/:id                                                                              
-    def destroy
-
-    end
+    end    
 
     def join
         params.require([:team])

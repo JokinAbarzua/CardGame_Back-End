@@ -52,7 +52,7 @@ class Game < ApplicationRecord
         raise StandardError.new("El usuario ya se encuentra en la partida") if self.players.find_by(user_id: user.id)
         raise StandardError.new("El juego ya ha empezado") if self.state == 1
         raise StandardError.new("El juego ya ha terminado") if self.state == 2
-        raise StandardError.new("Game is already full") if self.players_count >= self.size        
+        raise StandardError.new("El juego ya esta lleno") if self.players_count >= self.size        
         raise StandardError.new("El equipo \"nosotros\" ya está lleno") if self.us_count == self.size / 2 && (team == "us" || team == "0")
         raise StandardError.new("El equipo \"ellos\" ya está lleno") if self.players_count - self.us_count == self.size / 2 && (team == "them" || team == "1")
         

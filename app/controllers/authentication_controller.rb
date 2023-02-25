@@ -11,9 +11,9 @@ class AuthenticationController < ApplicationController
             @user.save(:validate => false)
             if(!@user.avatar.signed_id.nil?)
                 @avatar = rails_blob_path(@user.avatar)
-                render json:{status: 200, data: {token:token, user: @user.as_json( except: [:password_digest, :created_at, :updated_at]).merge({"avatar"=> @avatar})}}
+                render json:{status: 200, data: {token:token, user: @user.as_json( except: [:password_digest, :created_at, :updated_at,:token]).merge({"avatar"=> @avatar})}}
             else
-                render json:{status: 200, data: {token:token, user: @user.as_json( except: [:password_digest, :created_at, :updated_at])}}
+                render json:{status: 200, data: {token:token, user: @user.as_json( except: [:password_digest, :created_at, :updated_at,:token])}}
             end
         else
             render json:{status: 403, data: {message: "Usuario o Contraseña Invalidos"}} 
