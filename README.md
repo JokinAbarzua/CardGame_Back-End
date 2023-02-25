@@ -65,7 +65,11 @@ classDiagram
 ```
 
 ## Endpoints
-Para todas las request (excepto "create" y "login") es necesario enviar el JWT que autoriza al portador en el header como authorization bearer.<br/>Cuando se recibe una request sin JWT o estando éste caducado se responde:
+Para todas las request (excepto "create" y "login") es necesario enviar el JWT que autoriza al portador en el header como authorization bearer.
+<br/> El JWT contiene la id del usuario como se muestra: 
+
+![image](https://user-images.githubusercontent.com/87490328/221382506-9925d4c0-cdac-4620-9f06-e06adb8c9a46.png)
+<br/>Cuando se recibe una request sin JWT o estando éste caducado se responde:
 ```json
 {
     "status": 401,
@@ -197,7 +201,7 @@ Para todas las request (excepto "create" y "login") es necesario enviar el JWT q
 <td> POST /users </td> 
 <td> create </td> 
 <td>  
-Crea un usuario en la base de datos con los parámetros pasados en el body de la request
+Crea un usuario en la base de datos con los parámetros pasados en el body de la request<br/>Body params: username,password,avatar (blob.signed_id)
 </td> 
 <td>
 
@@ -249,7 +253,7 @@ Si la contraseña es muy corta:
 <tr>
 <td> PUT /user </td> 
 <td> update </td> 
-<td> Actualiza los datos del usuario que envía la request con los parámetros del body</td> 
+<td> Actualiza los datos del usuario que envía la request con los parámetros del body<br/>Body params: username,password,avatar (blob.signed_id)</td> 
 <td>
 
 ```json
@@ -267,7 +271,7 @@ Si la contraseña es muy corta:
 
 </td> 
 <td> 
-Presenta los mismos mensajes de error de las validaciones en el endpoint create
+Presenta los mismos mensajes de error de las validaciones en el endpoint "create"
 
 ```json
 {
@@ -1001,7 +1005,7 @@ Si el juego ya está lleno
 <tr>
 <td> POST  rails/active_storage/direct_uploads </td> 
 <td>  create </td>  
-<td> Crea un  Blob con el archivo que se le envía </td> 
+<td> Crea un  Blob sin subir un archivo. Este blob apuntará a una key donde no hay un archivo por el momento. Esto es necesario para luego subir el archivo </td> 
 <td> 
 
 ```json
